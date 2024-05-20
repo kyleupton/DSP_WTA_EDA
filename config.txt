@@ -1,5 +1,5 @@
 projectName : 'Subramaniam_msWTA'
-rootDir : /Users/upton6/Documents/Nanostring/Projects/NS_msWTA/DSP_Output/Annotated/
-initialDataPath : Initial Dataset Updated.xlsx
-QCDataPath : QC_Updated.xlsx
+rootDir : /Users/upton6/Documents/Nanostring/Projects/NS_Coeliac/DSP_Output/
+initialDataPath : Initial Dataset.xlsx
+QCDataPath : Default_QC.xlsx
 DCCPath : ''
