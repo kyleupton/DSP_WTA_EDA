@@ -6,28 +6,38 @@ class master_data:
     def __init__(self, dataPath):
         ### import data from excel workbook
         
+        # self.wb = load_workbook(dataPath)
+        # self.segWs = self.wb['SegmentProperties']
+        # self.cntWs = self.wb['BioProbeCountMatrix']
+        
         self.wb = load_workbook(dataPath)
         self.segWs = self.wb['SegmentProperties']
-        self.cntWs = self.wb['BioProbeCountMatrix']
+        self.cntWs = self.wb['TargetCountMatrix']
+        self.targWs = self.wb['TargetProperties']
         
         self.segValues = [[y.value for y in x] for x in self.segWs[self.segWs.calculate_dimension()]]
         self.cntValues = [[y.value for y in x] for x in self.cntWs[self.cntWs.calculate_dimension()]]
+        self.targValues = [[y.value for y in x] for x in self.targWs[self.targWs.calculate_dimension()]]
 
         self.dropData = False
         
         
     def get_data(self):
         ### Convert nested list to a pandas dataFrame and extract expression data with labels
-        cntData = self.cntValues
+        # cntData = self.cntValues
         cntCols = self.cntValues[0]
-        df = pd.DataFrame(self.cntValues)
-        cntIndex = [x[2] for x in self.cntValues[1:]]
-        indexName = self.cntValues[0][2]
+        # df = pd.DataFrame(self.cntValues)
+        cntIndex = [x[0] for x in self.cntValues[1:]]
         cntDF = pd.DataFrame(self.cntValues[1:], index=cntIndex, columns=cntCols)
-        cntDF.index.name = indexName
-        self.counts = cntDF.iloc[:,12:]
+        self.counts = cntDF.iloc[:,1:]
         self.counts = self.counts.astype(np.float64)      # Convert datatype to float64
-        self.priobeInfo = cntDF.iloc[:,:12]
+        
+        targCols = self.targValues[0]
+        targIndex = [x[0] for x in self.targValues[1:]]
+        targDF = pd.DataFrame(self.targValues[1:], index=targIndex, columns=targCols)
+        # self.priobeInfo = targDF.iloc[:,1:]
+        self.probeInfo = targDF
+        
         segCols = self.segValues[0]
         segIndex = [x[4].replace(' | ',('_')) for x in self.segValues[1:]]
         self.segData = pd.DataFrame(self.segValues[1:], index=segIndex, columns=segCols)
@@ -48,7 +58,8 @@ class master_data:
             'Control': 'C',
             'Endogenous': 'E'}
 
-        return(self.counts, self.priobeInfo, self.segData)
+        return(self.counts, self.probeInfo, self.segData)
+
 
     def get_descriptors(self):
         pass
@@ -66,4 +77,39 @@ class master_data:
 
     def drop_probes(self, labels):
         pass
-        
+
+
+
+     
+## read in paths from config file
+def readConfig():
+    configDict = {
+        'rootDir': '',
+        'initialDataPath' : '',
+        'QCDataPath' : '',
+        'labWorksheet01Path':'',
+        'projectName':'',
+        'selectedData':[]
+    }
+    
+    with open('config.txt','r') as f:
+        lines = f.readlines()
+        for line in lines:
+            if ((not line.startswith('#')) and (not line.strip()=='')):
+                line = line.strip()
+                fields = line.split(':')
+                print(f'{fields[0]} : {fields[1]}')
+                if fields[0].strip()=='initialDataPath':
+                    configDict[fields[0].strip()] = fields[1].strip().strip('\'')
+                elif fields[0].strip()=='probeThresholdIdx':
+                    configDict[fields[0].strip()] = int(fields[1].strip().strip('\''))
+                elif fields[0].strip()=='selectedData':
+                    tempList = fields[1].strip().strip('\'').split(',')
+                    tempList = [x.strip() for x in tempList]
+                    tempList = [x for x in tempList if not x=='']
+                    configDict['selectedData'] = tempList
+                else:
+                    configDict[fields[0].strip()] = fields[1].strip().strip('\'')
+    ## ToDo: Add checks to ensure that minimal fields have been populated. Raise errors or warnings
+    return configDict
+
