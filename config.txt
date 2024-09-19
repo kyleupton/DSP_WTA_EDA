@@ -1,5 +1,5 @@
-projectName : 'Subramaniam_msWTA'
-rootDir : /Users/upton6/Documents/Nanostring/Projects/NS_Coeliac/DSP_Output/
+projectName : 'Dando'
+rootDir : /Users/upton6/Documents/Nanostring/Projects/Dando/DSP_Output/
 initialDataPath : Initial Dataset.xlsx
-QCDataPath : Default_QC.xlsx
+QCDataPath : RNA NGS Workflow 4 Dando_5_Filter.xlsx
 DCCPath : ''

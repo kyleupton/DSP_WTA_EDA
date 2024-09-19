@@ -38,9 +38,10 @@ rm(Libraries)
 ################################################################################
 ####################  Read-in probe counts, anno and feature files (TSVs). #####
 
-countFile <- "/Users/upton6/Documents/Nanostring/projects/NS_msWTA/DSP_Output/countFile.tsv"
-sampleAnnoFile <- "/Users/upton6/Documents/Nanostring/projects/NS_msWTA/DSP_Output/sampleAnnoFile.tsv"
-featureAnnoFile <- "/Users/upton6/Documents/Nanostring/projects/NS_msWTA/DSP_Output/featureAnnoFile.tsv"
+
+countFile <- "/Users/upton6/Documents/Nanostring/projects/NS_JCU_WTA/DSP_Output/countFile.txt"
+sampleAnnoFile <- "/Users/upton6/Documents/Nanostring/projects/NS_JCU_WTA/DSP_Output/sampleAnnoFile.txt"
+featureAnnoFile <- "/Users/upton6/Documents/Nanostring/projects/NS_JCU_WTA/DSP_Output/featureAnnoFile.tsv"
 
 ################################################################################
 #####################################  Run through STANDR ######################
@@ -50,7 +51,7 @@ featureAnnoFile <- "/Users/upton6/Documents/Nanostring/projects/NS_msWTA/DSP_Out
 spe <- readGeoMx(countFile, sampleAnnoFile, 
                  featureAnnoFile = featureAnnoFile, rmNegProbe = TRUE)
 
-setwd("/Users/upton6/Documents/Nanostring/projects/NS_msWTA/")
+setwd("/Users/upton6/Documents/Nanostring/projects/NS_JCU_WTA/DSP_Output/StandR/")
 
 # ```
 # ## QC
@@ -70,7 +71,10 @@ colData(spe)$regions <- paste0(colData(spe)$region,"_",colData(spe)$SegmentLabel
 # todo: get variables to plot from options
 
 # plotSampleInfo(spe, column2plot = c("SlideName","disease_status","regions"))
-plotSampleInfo(spe, column2plot = c("SlideName","Strain","KO","Diet"))
+# plotSampleInfo(spe, column2plot = c("SlideName","Strain","KO","Diet"))
+
+# plotSampleInfo(spe, column2plot = c("SlideName","Group","TimePoint","ClinicalOutcome"))
+plotSampleInfo(spe, column2plot = c("Group","TimePoint","ClinicalOutcome"))
 
 
 ### Gene level QC
@@ -144,7 +148,7 @@ drawPCA(spe, assay = 2, col = SlideName, shape = regions)
 # 
 # Here we used TMM to normalize the data.
 # colData(spe)$biology <- paste0(colData(spe)$disease_status, "_", colData(spe)$regions)
-colData(spe)$biology <- paste0(colData(spe)$Strain, "_", colData(spe)$Diet)
+colData(spe)$biology <- paste0(colData(spe)$SegmentLabel, "_", colData(spe)$Group, "_", colData(spe)$TimePoint, "_", colData(spe)$ClinicalOutcome)
 
 spe_tmm <- geomxNorm(spe, method = "TMM")
 
@@ -178,7 +182,11 @@ spe_ruv <- geomxBatchCorrection(spe, factors = "biology",
 # We can then inspect the PCA of the corrected data with annotations, to inspect 
 # the removal of batch effects, and the retaining of the biological factors.
 # 
-plotPairPCA(spe_ruv, assay = 2, color = Strain, shape = regions, title = "RUV4")
+plotPairPCA(spe_ruv, assay = 2, color = SegmentLabel, shape = regions, title = "RUV4")
+plotPairPCA(spe_ruv, assay = 2, color = Group, shape = regions, title = "RUV4")
+plotPairPCA(spe_ruv, assay = 2, color = TimePoint, shape = regions, title = "RUV4")
+plotPairPCA(spe_ruv, assay = 2, color = ClinicalOutcome, shape = regions, title = "RUV4")
+
 # 
 # Moreover, we can also have a look at the RLE plots of the normalized count.
 # 
@@ -187,6 +195,14 @@ plotRLExpr(spe_ruv, assay = 2, color = SlideName) + ggtitle("RUV4")
 # 
 # **For more detailed analysis pipeline and usage of the standR package, please see https://github.com/DavisLaboratory/GeoMXAnalysisWorkflow**
 # 
+
+
+spe_RUV_out <- assay(spe_ruv, i=2)
+spe_RUV_out <- 2**spe_RUV_out
+
+write.table(spe_RUV_out, file = "RUV_corrected_values.csv", sep = ",", row.names = TRUE, col.names = TRUE)
+
+
 
 # # SessionInfo
 sessionInfo()

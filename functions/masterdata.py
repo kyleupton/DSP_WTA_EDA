@@ -21,8 +21,10 @@ class master_data:
         cntData = self.cntValues
         cntCols = self.cntValues[0]
         df = pd.DataFrame(self.cntValues)
-        cntIndex = [x[0] for x in self.cntValues[1:]]
+        cntIndex = [x[2] for x in self.cntValues[1:]]
+        indexName = self.cntValues[0][2]
         cntDF = pd.DataFrame(self.cntValues[1:], index=cntIndex, columns=cntCols)
+        cntDF.index.name = indexName
         self.counts = cntDF.iloc[:,12:]
         self.counts = self.counts.astype(np.float64)      # Convert datatype to float64
         self.priobeInfo = cntDF.iloc[:,:12]

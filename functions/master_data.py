@@ -8,10 +8,12 @@ class master_data:
         
         self.wb = load_workbook(dataPath)
         self.segWs = self.wb['SegmentProperties']
-        self.cntWs = self.wb['BioProbeCountMatrix']
+        self.cntWs = self.wb['TargetCountMatrix']
+        self.targWs = self.wb['TargetProperties']
         
         self.segValues = [[y.value for y in x] for x in self.segWs[self.segWs.calculate_dimension()]]
         self.cntValues = [[y.value for y in x] for x in self.cntWs[self.cntWs.calculate_dimension()]]
+        self.targValues = [[y.value for y in x] for x in self.targWs[self.targWs.calculate_dimension()]]
 
         self.dropData = False
         
@@ -23,7 +25,8 @@ class master_data:
         df = pd.DataFrame(self.cntValues)
         cntIndex = [x[0] for x in self.cntValues[1:]]
         cntDF = pd.DataFrame(self.cntValues[1:], index=cntIndex, columns=cntCols)
-        self.counts = cntDF.iloc[:,12:]
+        # self.counts = cntDF.iloc[:,12:]
+        self.counts = cntDF
         self.counts = self.counts.astype(np.float64)      # Convert datatype to float64
         self.priobeInfo = cntDF.iloc[:,:12]
         segCols = self.segValues[0]

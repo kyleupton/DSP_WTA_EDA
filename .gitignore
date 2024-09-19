@@ -1,7 +1,16 @@
 # Project Specific Files #
 ##########################
-config.txt
+projects*
 EdgeR_Config.txt
+EdgeR_Studio.R
+localhelpers
+
+
+# Figure and data outputs #
+###########################
+*.png
+*.jpg
+*.csv
 
 # Compiled source #
 ###################
@@ -30,6 +39,8 @@ EdgeR_Config.txt
 *.log
 *.sql
 *.sqlite
+*checkpoint.ipynb
+.ipynb_checkpoints
 
 # OS generated files #
 ######################
